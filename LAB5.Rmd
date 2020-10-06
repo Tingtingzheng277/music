@@ -1,0 +1,104 @@
+---
+title: "LAB5"
+author: "Tingting Zheng"
+date: "2020/2/19"
+---
+
+##Question 1: What is the data showing? [5 marks]
+This is a data-set of 100 top tracks of 2018 From Spotify. Each row represents a track. The id column is the categorical variable which is the Spotify’s identification of the song. The name column is also the categorical variable and shows the name of each video. The artists column is the categorical variable which displays artist(s) of the song. The danceability column is a numerical variable and displays how suitable a track is for dancing based on a combination of musical elements including tempo, rhythm stability, beat strength, and overall regularity. The energy column is the numerical variable which is a measure from 0.0 to 1.0 and represents a perceptual measure of intensity and activity. The key column is the categorical variable. The key the track is in. Integers map to pitches using standard pitch Class notation. E.g. 0=C, 2=D, and so on. The loudness column is the numerical variable. The overall loudness of a track in decibels (dB). The mode column is the quantitative variable. Mode indicates the modality (major or minor) of a track, the type of scale from which its melodic content is derived. The speechiness column is the quantitative variable. Speechiness detects the presence of spoken words in a track. The more exclusively speech-like the recording (e.g. talk show, audio book, poetry), the closer to 1.0 the attribute value. The acousticness column is the quantitative variable. A confidence measure from 0.0 to 1.0 of whether the track is acoustic. The instrumentalness column is the quantitative variable. Predicts whether a track contains no vocals. The liveness column is the quantitative variable which detects the presence of an audience in the recording. The valence column is the quantitative variable. It’s a measure from 0.0 to 1.0 describing the musical positiveness conveyed by a track. The tempo column is the quantitative variable. The overall estimated tempo of a track in beats per minute (BPM). The duration_ms column is the quantitative variable. It is the duration of the track in milliseconds. The time_signature column is the quantitative variable which is an estimated overall time signature of a track. The time signature (meter) is a notational convention to specify how many beats are in each bar (or measure).
+
+##Question 2: Why did you choose this data? Why is the topic personally interesting to you? [2 marks]
+Because I use Spotify almost every day not only for entertainment, but also for study. When I see the title "Top Spotify Tracks of 2018", it's really attract me to learn more about Spotify data. 
+I want to look for patterns in the audio features of the songs. I am trying to predict one audio feature based on the others. So this topic is personally interesting me.
+
+##Question 3: What is the regression question that you want to carry out on the data? Make sure you are clear on which variable might cause the other [5 marks]
+I want to assess whether the loudness will affect the energy of a song. 
+
+##Question 4: A reference for the data so that I would be able to download it myself. [5 marks]
+Nadin Tamer (2019). Top Spotify Tracks of 2018 [Data file]. Retrieved from https://www.kaggle.com/nadintamer/top-spotify-tracks-of-2018
+
+
+## Initial exploratory analysis
+
+##Question 5: Identify the explanatory and response variable in your problem. [5 marks]
+The explanatory variable is the loudness.
+The response variable is the energy.
+
+##Question 6: Read the data into R and conduct some initial summaries of your exploratory and response data. Describe what you found (incuding any plots or screenshots as appropirate) [5 marks]
+```{r}
+top2018<-read.csv("top2018.csv")
+attach(top2018) # The database "top2018 is attached to the R search path
+summary(top2018) # To produce result summaries of the data from top2018.
+dim(top2018) # to get dimensions Of data top2018
+qqnorm(top2018$energy, pch = 1, frame = FALSE, main = "Normal Q-Q Plot for Energy") # produces a normal QQ plot of the value energy
+qqline(top2018$energy, col = "steelblue", lwd = 2) # adds a line to a “theoretical”, by default normal, quantile-quantile plot
+qqnorm(top2018$loudness, pch = 1, frame = FALSE, main = "Normal Q-Q Plot for Loudness") # produces a normal QQ plot of the value loudness
+qqline(top2018$loudness, col = "steelblue", lwd = 2) # adds a line to a “theoretical”, by default normal, quantile-quantile plot
+hist(top2018$energy, main = "histogram of engergy", xlab = "energy", ylab = "frequency") # produce a histogram of energy
+hist(top2018$loudness, main = "histogram of loudness", xlab = "loudness", ylab = "dB") # produce a histogram of loudness
+boxplot(top2018$energy, main = "boxplot of engergy", xlab = "energy", ylab = "frequency") # produce a boxplot of engergy
+boxplot(top2018$loudness, main = "boxplot of loudness", xlab = "loudness", ylab = "dB") # produce a boxplot of loudness
+```
+
+##Question 7: Create a scatter plot of your explanatory and response variables. Describe the relationship’s form, direction and strength and any outliers or features.
+```{r}
+plot(x = top2018$loudness, 
+     y = top2018$energy, 
+     main = "Energy vs Loudness",
+     xlab = "Loudness", 
+     ylab = "Energy",  
+     pch = 16) # A scatterplot of energy and loudness. With loudness in the x-axis, energy in the y-axis.
+
+```
+
+
+## Correlation
+
+## Question 8: Use R to calculate the correlation coefficient and its 99% confidence interval. You are welcome to use any method you like [7 marks]
+```{r}
+cor.test(loudness,energy,conf.level=0.99) # Test For Correlation Between loudness and energy and it's 99% confidence interval
+```
+
+
+## Regression
+
+
+## Question 9: Use R to create a linear model (e.g. carry out a simple linear regression) between your two variables and save it to a variable called fit1 [5 marks]
+```{r}
+Fit1=lm(energy~loudness,data=top2018) #creat a linear model between energy and loudness
+summary(Fit1) # To produce result summaries of the linear model Fit1
+```
+
+
+## Question 10: In your write-up, write the equation of the regression for your data, relacing “y”, “x”,“b1”,“b0” etc with the appropriate variables for your topic. Interpret what the gradient and intercept mean in words [7 marks]
+y=0.05980x+0.99857, where y is energy, x is loudness, b1=0.05980, b0=0.99857.
+For the regression model, it indicates that when loudness equals to 0, the energy is 0.99857. And for each unit increased in loudness, the energy will increase 0.05980.
+
+## Question 11: se the summary(fit1) command to identify the R2 and adjusted R2 values for your model. [3 marks]
+```{r}
+summary(Fit1) # To produce result summaries of the linear model Fit1
+```
+R2 equals to 0.5369(53.69%), and adjusted R2 equals to 0.5322(53.22%).
+
+## Question 12: Explain the difference between the R2 value and the adjusted R2 value. You should described the difference in enough detail that I would be able to read out your words in class and for your classmates to understand what is going on. If you referred to online sources,references as needed. [5 marks]
+One major difference between R-squared and the adjusted R-squared is that R-squared supposes that every independent variable in the model explains the variation in the dependent variable. Multiple R-squared is used for evaluating how well your model fits the data. They tell you how much of the variance in the dependent variable can be explained by the independent variables. Every time you add new variables, the R square value will increase irrespective of the variable significance. The higher the R squared, the more variation is explained by your input variables and hence better is your model. Adjusted R-squared also provides the same information as R-squared but adjusts for the number of terms in the model. It does not monotonically increase like R-squared but increases only when the new variable actually has an effect on the predicted value. It decreases when the new variable does not have any real impact on the predicted value.
+
+## Question 13: Add the line of best fit to your scatter plot. Interpret whether you are happy with this model or whether it could suffer from one of the issues that can impact linear regression.
+```{r}
+plot(x = top2018$loudness, 
+     y = top2018$energy,  
+     main = "Energy vs Loudness",
+     xlab = "Loudness", 
+     ylab = "Energy", 
+     pch = 16) # produce the scatter plot of energy and loudness, with loudness in the x-axis, energy in the y-axis
+abline(lm(energy~loudness, data=top2018), col='green4') # add the line of the best fit into the scatter plot
+```
+
+## Question 14: Conduct a hypothesis test to assess whether there a (linear) relationship between your explanatory and response variable. For example, as described in the latest lecture, use a t-test to determine if the slope, β1, of the population regression line = 0. Note, all the values you need for this are all included in summary(fit1). [14 marks]
+H0:The loudness is not a significant explanotary variable for predicting energy (β1=0)
+H1:The loudness is a significant explanotary variable for predicting energy (β1 not equal to 0)
+```{r}
+T=(0.05980-0)/0.00561 # use a t-test to determine if loudness is a significant explanotary variable for energy
+2*pt(T,df=98,lower.tail = FALSE) # because it's two tails, so we should times two to get the p-value
+```
+So p-value=4.506288e-18 which is smaller than 0.05, so we can reject hypothesis and conclude that we have sufficient evidence that the loudness is significant explanatory variable for predicting energy (β1 not equal to 0)
